@@ -4,7 +4,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Core/Render/VAO.h"
+#include "Core/Render/VBO.h"
+#include "Core/Render/EBO.h"
+
 #include "Core/Render/Shader.h"
+
 
 // Callback function forward declarations
 void processInput(GLFWwindow* window);
