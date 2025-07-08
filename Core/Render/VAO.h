@@ -23,7 +23,7 @@ public:
     VAO& operator=(VAO&&) = delete;
 
     // Sets the vertex attrib pointer
-    void LinkVBO(VBO& vbo, GLuint layout, GLint size, GLenum type, GLsizei stride, std::size_t offset);
+    void LinkAttrib(VBO& vbo, GLuint layout, GLint size, GLenum type, GLsizei stride, std::size_t offset);
 
     // Bind and unbind the VAO
     void Bind();

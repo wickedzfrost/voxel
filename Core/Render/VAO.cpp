@@ -10,7 +10,7 @@ VAO::~VAO()
     glDeleteVertexArrays(1, &m_id);
 }
 
-void VAO::LinkVBO(VBO& vbo, GLuint layout, GLint size, GLenum type, GLsizei stride, std::size_t offset) 
+void VAO::LinkAttrib(VBO& vbo, GLuint layout, GLint size, GLenum type, GLsizei stride, std::size_t offset) 
 {
     Bind();
     vbo.Bind();

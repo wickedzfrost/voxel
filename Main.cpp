@@ -19,18 +19,17 @@ namespace Configs
     inline constexpr int SCR_HEIGHT{ 900 };
 }
 
-constexpr std::array<GLfloat, 12> vertices
+constexpr std::array<GLfloat, 18> vertices
 {
-     0.5f,  0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    -0.5f,  0.5f, 0.0f,
+    // Positions        // Colors
+     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
+     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
 };
 
-constexpr std::array<GLuint, 6> indices
+constexpr std::array<GLuint, 3> indices
 {
-    0, 1, 3,
-    1, 2, 3,
+    0, 1, 2,
 };
 
 GLFWwindow* setupGLFW()
@@ -100,7 +99,8 @@ int main()
     vbo.Bind();
     ebo.Bind();
 
-    vao.LinkVBO(vbo, 0, 3, GL_FLOAT, 3 * sizeof(float), 0);
+    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);
+    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), 3 * sizeof(float));
 
     vao.Unbind();
     vbo.Unbind();
@@ -111,6 +111,7 @@ int main()
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 #endif
 
+    // Render loop
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
