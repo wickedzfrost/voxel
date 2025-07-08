@@ -7,9 +7,7 @@
 #include "Core/Render/VAO.h"
 #include "Core/Render/VBO.h"
 #include "Core/Render/EBO.h"
-
 #include "Core/Render/Shader.h"
-
 
 // Callback function forward declarations
 void processInput(GLFWwindow* window);
@@ -21,11 +19,18 @@ namespace Configs
     inline constexpr int SCR_HEIGHT{ 900 };
 }
 
-constexpr std::array<GLfloat, 9> vertices
+constexpr std::array<GLfloat, 12> vertices
 {
-    -0.5f, -0.5f, 0.0f,
+     0.5f,  0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f,
+    -0.5f,  0.5f, 0.0f,
+};
+
+constexpr std::array<GLuint, 6> indices
+{
+    0, 1, 3,
+    1, 2, 3,
 };
 
 GLFWwindow* setupGLFW()
@@ -87,17 +92,24 @@ int main()
 
     Shader shader("Shaders/vert.glsl", "Shaders/frag.glsl");
 
-    GLuint VAO{};
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    VAO vao{};
+    vao.Bind();
 
-    GLuint VBO{};
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
+    VBO vbo{ vertices, GL_STATIC_DRAW };
+    EBO ebo{ indices, GL_STATIC_DRAW };
+    vbo.Bind();
+    ebo.Bind();
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    vao.LinkVBO(vbo, 0, 3, GL_FLOAT, 3 * sizeof(float), 0);
+
+    vao.Unbind();
+    vbo.Unbind();
+    ebo.Unbind();
+
+// Turns wireframe mode on or off
+#if 0
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#endif
 
     while (!glfwWindowShouldClose(window))
     {
@@ -108,8 +120,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.Use();
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        vao.Bind();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
