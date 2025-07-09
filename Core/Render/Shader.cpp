@@ -6,11 +6,93 @@
 #include <initializer_list>
 #include <glm/gtc/type_ptr.hpp>
 
-// Forward declarations of helper functions
-std::string readShaderFile(const char* filePath);
-GLuint compileShader(const char* shaderCode, GLenum shaderType);
-void checkCompileErrors(GLuint shader, std::string_view type);
-GLuint createProgram(std::initializer_list<GLuint> shaderList);
+// === Helper Functions === //
+namespace
+{
+    std::string readShaderFile(const char* filePath)
+    {
+        std::string shaderCode;
+        std::ifstream shaderFile;
+
+        // Ensures ifstream objects can throw exceptions
+        shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+        try
+        {
+            shaderFile.open(filePath);
+
+            std::stringstream shaderStream;
+
+            shaderStream << shaderFile.rdbuf();
+
+            shaderFile.close();
+
+            shaderCode = shaderStream.str();
+        }
+        catch ([[maybe_unused]] const std::ifstream::failure& e)
+        {
+            std::cout << "Failed to read shader file: " << filePath << '\n';
+            return {};
+        }
+
+        return shaderCode;
+    }
+
+    void checkCompileErrors(GLuint shader, std::string_view type)
+    {
+        int success{};
+        char infoLog[1024];
+        if (type != "PROGRAM")
+        {
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
+                std::cout << type << " compilation error: " << infoLog << '\n';
+            }
+        }
+        else
+        {
+            glGetProgramiv(shader, GL_LINK_STATUS, &success);
+            if (!success)
+            {
+                glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
+                std::cout << type << " linking error: " << infoLog << '\n';
+            }
+        }
+    }
+
+    GLuint compileShader(const char* shaderCode, GLenum shaderType)
+    {
+        GLuint shader{ glCreateShader(shaderType) };
+        glShaderSource(shader, 1, &shaderCode, nullptr);
+        glCompileShader(shader);
+
+        checkCompileErrors(shader, "SHADER");
+        return shader;
+    }
+
+    GLuint createProgram(std::initializer_list<GLuint> shaderList)
+    {
+        GLuint programID{ glCreateProgram() };
+
+        // Attach valid shaders
+        for (GLuint shader : shaderList)
+            if (shader != 0)
+                glAttachShader(programID, shader);
+
+        glLinkProgram(programID);
+
+        checkCompileErrors(programID, "PROGRAM");
+
+        // Delete shaders
+        for (GLuint shader : shaderList)
+            if (shader != 0)
+                glDeleteShader(shader);
+
+        return programID;
+    }
+}
 
 // === Shader Class === //
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
@@ -60,89 +142,4 @@ void Shader::setFloat(std::string_view name, const float value) const
 void Shader::setMat4(std::string_view name, const glm::mat4& value) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_id, name.data()), 1, GL_FALSE, glm::value_ptr(value));
-}
-
-// === Helper Functions === //
-std::string readShaderFile(const char* filePath)
-{
-    std::string shaderCode;
-    std::ifstream shaderFile;
-    
-    // Ensures ifstream objects can throw exceptions
-    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-    try
-    {
-        shaderFile.open(filePath);
-
-        std::stringstream shaderStream;
-
-        shaderStream << shaderFile.rdbuf();
-
-        shaderFile.close();
-
-        shaderCode = shaderStream.str();
-    }
-    catch ([[maybe_unused]] const std::ifstream::failure& e)
-    {
-        std::cout << "Failed to read shader file: " << filePath << '\n';
-        return {};
-    }
-
-    return shaderCode;
-}
-
-GLuint compileShader(const char* shaderCode, GLenum shaderType)
-{
-    GLuint shader{ glCreateShader(shaderType) };
-    glShaderSource(shader, 1, &shaderCode, nullptr);
-    glCompileShader(shader);
-
-    checkCompileErrors(shader, "SHADER");
-    return shader;
-}
-
-void checkCompileErrors(GLuint shader, std::string_view type)
-{
-    int success{};
-    char infoLog[1024];
-    if (type != "PROGRAM")
-    {
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            std::cout << type << " compilation error: " << infoLog << '\n';
-        }
-    }
-    else
-    {
-        glGetProgramiv(shader, GL_LINK_STATUS, &success);
-        if (!success)
-        {
-            glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-            std::cout << type << " linking error: " << infoLog << '\n';
-        }
-    }
-}
-
-GLuint createProgram(std::initializer_list<GLuint> shaderList)
-{
-    GLuint programID{ glCreateProgram() };
-
-    // Attach valid shaders
-    for (GLuint shader : shaderList)
-        if (shader != 0)
-            glAttachShader(programID, shader);
-
-    glLinkProgram(programID);
-
-    checkCompileErrors(programID, "PROGRAM");
-
-    // Delete shaders
-    for (GLuint shader : shaderList)
-        if (shader != 0)
-            glDeleteShader(shader);
-
-    return programID;
 }

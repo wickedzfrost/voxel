@@ -8,6 +8,7 @@
 #include "Core/Render/VBO.h"
 #include "Core/Render/EBO.h"
 #include "Core/Render/Shader.h"
+#include "Core/Render/Texture.h"
 
 // Callback function forward declarations
 void processInput(GLFWwindow* window);
@@ -19,17 +20,19 @@ namespace Configs
     inline constexpr int SCR_HEIGHT{ 900 };
 }
 
-constexpr std::array<GLfloat, 18> vertices
+constexpr std::array<GLfloat, 32> vertices
 {
-    // Positions        // Colors
-     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
-     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-    -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+    // Positions        // Colors           // Texture coords
+     0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
+     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
+    -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+    -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f,
 };
 
-constexpr std::array<GLuint, 3> indices
+constexpr std::array<GLuint, 6> indices
 {
-    0, 1, 2,
+    0, 1, 3,
+    1, 2, 3,
 };
 
 GLFWwindow* setupGLFW()
@@ -99,12 +102,19 @@ int main()
     vbo.Bind();
     ebo.Bind();
 
-    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);
-    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), 3 * sizeof(float));
+    Texture texture{ "Assets/container.jpg", GL_RGB, GL_TEXTURE0 };
+    Texture texture2{ "Assets/awesomeface.png", GL_RGBA, GL_TEXTURE1 };
+
+    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 8 * sizeof(GLfloat), 0);
+    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 8 * sizeof(GLfloat), 3 * sizeof(float));
+    vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, 8 * sizeof(GLfloat), 6 * sizeof(float));
 
     vao.Unbind();
     vbo.Unbind();
     ebo.Unbind();
+
+    texture.TexUnit(shader, "texture1", 0);
+    texture2.TexUnit(shader, "texture2", 1);
 
 // Turns wireframe mode on or off
 #if 0
@@ -121,6 +131,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.Use();
+        texture.Bind();
+        texture2.Bind();
         vao.Bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);;
 
