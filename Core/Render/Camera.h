@@ -12,7 +12,9 @@ namespace CameraConstants
     inline constexpr float yaw{ -90.0f };
     inline constexpr float pitch{ 0.0f };
     inline constexpr float sensitivity{ 0.05f };
-    inline constexpr float zoom{ 45.0f };
+    inline constexpr float defaultZoom{ 45.0f };
+    inline constexpr float minZoom{ 1.0f };
+    inline constexpr float maxZoom{ 55.0f };
 }
 
 class Camera
@@ -42,8 +44,19 @@ public:
     float m_mouseSensitivity{};
     float m_zoom{};
 
+    // No default constructor, supply with atleast camera position
+    Camera() = delete;
+
     // Constructor using glm::vec3
     Camera(glm::vec3 position, glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
+
+    ~Camera() = default;
+
+    // Deleted copy and move operations, too lazy to implement them and i don't really need to use them
+    Camera(const Camera&) = delete;
+    Camera& operator=(const Camera&) = delete;
+    Camera(Camera&&) = delete;
+    Camera& operator=(Camera&&) = delete;
 
     glm::mat4 GetViewMatrix();
 

@@ -225,7 +225,9 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        const glm::mat4 proj{ glm::perspective(glm::radians(Globals::g_camera.m_zoom), Configs::ASPECT_RATIO, 0.1f, 100.0f) };
+        constexpr float nearPlane{ 0.1f };
+        constexpr float farPlane{ 100.0f };
+        const glm::mat4 proj{ glm::perspective(glm::radians(Globals::g_camera.m_zoom), Configs::ASPECT_RATIO, nearPlane, farPlane) };
         shader.setMat4("proj", proj);
 
         const glm::mat4 view{ Globals::g_camera.GetViewMatrix() };
