@@ -7,7 +7,12 @@
 
 namespace CameraConstants
 {
-    inline constexpr float moveSpeed{ 0.1f };
+    inline constexpr glm::vec3 defaultCameraDirection{ 0.0f, 0.0f, -1.0f };
+    inline constexpr float moveSpeed{ 2.5f };
+    inline constexpr float yaw{ -90.0f };
+    inline constexpr float pitch{ 0.0f };
+    inline constexpr float sensitivity{ 0.05f };
+    inline constexpr float zoom{ 45.0f };
 }
 
 class Camera
@@ -21,22 +26,33 @@ public:
         right,
     };
 
+    // Camera attributes
     glm::vec3 m_cameraPosition{};
     glm::vec3 m_cameraDirection{};
     glm::vec3 m_cameraUp{};
     glm::vec3 m_cameraRight{};
     glm::vec3 m_worldUp{};
-    float m_movementSpeed{};
+    
+    // Euler angles
+    float m_yaw{};
+    float m_pitch{};
 
+    // Camera properties
+    float m_movementSpeed{};
+    float m_mouseSensitivity{};
+    float m_zoom{};
+
+    // Constructor using glm::vec3
     Camera(glm::vec3 position, glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
 
     glm::mat4 GetViewMatrix();
 
+    // Input processing functions
     void ProcessKeyboard(Direction direction, float deltaTime);
+    void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = GL_TRUE);
+    void ProcessScrollWheel(float yOffset);
 
 private:
-    static constexpr float m_sensitivity{ 0.1f };
-    glm::mat4 m_view{};
 
     void UpdateCameraVectors();
 };

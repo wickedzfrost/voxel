@@ -15,14 +15,27 @@
 #include "Core/Render/Camera.h"
 
 // Callback function forward declarations
-void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+void scroll_callback(GLFWwindow* window, [[maybe_unused]] double xOffset, double yOffset);
+void processInput(GLFWwindow* window);
 
 namespace Configs
 {
     inline constexpr int SCR_WIDTH{ 1200 };
     inline constexpr int SCR_HEIGHT{ 900 };
     inline constexpr float ASPECT_RATIO{ static_cast<float>(SCR_WIDTH) / SCR_HEIGHT };
+}
+
+namespace Globals
+{
+    Camera g_camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    float g_deltaTime{ 0.0f };
+    float g_lastTime{ 0.0f };
+
+    bool g_firstMouse{ true };
+    float g_mouseLastX{ Configs::SCR_WIDTH };
+    float g_mouseLastY{ Configs::SCR_HEIGHT };
 }
 
 constexpr std::array<GLfloat, 192> vertices
@@ -100,34 +113,38 @@ constexpr std::array<glm::vec3, 10> cubePositions
     glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-
-GLFWwindow* setupGLFW()
+// Anon-namespace for initialization functions
+namespace
 {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    GLFWwindow* setupGLFW()
+    {
+        glfwInit();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window{ glfwCreateWindow(Configs::SCR_WIDTH, Configs::SCR_HEIGHT, "Voxel", nullptr, nullptr) };
-    if (window)
-        return window;
+        GLFWwindow* window{ glfwCreateWindow(Configs::SCR_WIDTH, Configs::SCR_HEIGHT, "Voxel", nullptr, nullptr) };
+        if (window)
+            return window;
 
-    return nullptr;
-}
+        return nullptr;
+    }
 
-// You need to manually sets the function pointers!
-void setCallback(GLFWwindow* window)
-{
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-}
+    // You need to manually sets the function pointers!
+    void setCallback(GLFWwindow* window)
+    {
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        glfwSetCursorPosCallback(window, mouse_callback);
+        glfwSetScrollCallback(window, scroll_callback);
+    }
 
-bool loadGLAD()
-{
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        return false;
+    bool loadGLAD()
+    {
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+            return false;
 
-    return true;
+        return true;
+    }
 }
 
 int main()
@@ -147,6 +164,9 @@ int main()
 
     // This function handles all the callback setup
     setCallback(window);
+
+    // Captures our mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Loads GLAD function pointers
     if (!loadGLAD())
@@ -176,16 +196,13 @@ int main()
     vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 8 * sizeof(GLfloat), 3 * sizeof(float));
     vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, 8 * sizeof(GLfloat), 6 * sizeof(float));
 
+    // Unbind to prevent accidental modifications
     vao.Unbind();
     vbo.Unbind();
     ebo.Unbind();
 
     texture.TexUnit(shader, "texture1", 0);
     texture2.TexUnit(shader, "texture2", 1);
-
-    // Set once, as projection matrix will probably not be changed
-    glm::mat4 proj{ glm::perspective(glm::radians(55.0f), Configs::ASPECT_RATIO, 0.1f, 100.0f) };
-    shader.setMat4("proj", proj);
 
 // Turns wireframe mode on or off
 #if 0
@@ -194,23 +211,30 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     
-    glm::mat4 view{ camera.GetViewMatrix() };
-    
     // Render loop
     while (!glfwWindowShouldClose(window))
     {
+        // Time calculations
+        float currentTime{ static_cast<float>(glfwGetTime()) };
+        Globals::g_deltaTime = currentTime - Globals::g_lastTime;
+        Globals::g_lastTime = currentTime;
+
         processInput(window);
 
-        // Draw calls
+        // Clear buffers
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        view = camera.GetViewMatrix();
+        const glm::mat4 proj{ glm::perspective(glm::radians(Globals::g_camera.m_zoom), Configs::ASPECT_RATIO, 0.1f, 100.0f) };
+        shader.setMat4("proj", proj);
+
+        const glm::mat4 view{ Globals::g_camera.GetViewMatrix() };
         shader.setMat4("view", view);
 
         shader.Use();
         vao.Bind();
 
+        // Draw calls
         for (std::size_t i{ 0 }; i < cubePositions.size(); ++i)
         {
             glm::mat4 model{ glm::mat4{1.0f} };
@@ -230,25 +254,57 @@ int main()
     return 0;
 }
 
-void processInput(GLFWwindow* window)
-{
-    using enum Camera::Direction;
-    float deltaTime{ 0.1f };
-
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(forward, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(backward, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(left, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(right, deltaTime);
-
-}
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xPos, double yPos)
+{
+    using namespace Globals;
+
+    float xPosition{ static_cast<float>(xPos) };
+    float yPosition{ static_cast<float>(yPos) };
+
+    if (g_firstMouse)
+    {
+        g_mouseLastX = xPosition;
+        g_mouseLastY = yPosition;
+        g_firstMouse = false;
+    }
+
+    float xOffset{ xPosition - g_mouseLastX };
+    float yOffset{ g_mouseLastY - yPosition };
+
+    g_mouseLastX = xPosition;
+    g_mouseLastY = yPosition;
+
+    g_camera.ProcessMouseMovement(xOffset, yOffset);
+}
+
+void scroll_callback(GLFWwindow* window, [[maybe_unused]] double xOffset, double yOffset)
+{
+    using namespace Globals;
+    g_camera.ProcessScrollWheel(static_cast<float>(yOffset));
+}
+
+void processInput(GLFWwindow* window)
+{
+    using namespace Globals;
+    using enum Camera::Direction;
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        g_camera.ProcessKeyboard(forward, g_deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        g_camera.ProcessKeyboard(backward, g_deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        g_camera.ProcessKeyboard(left, g_deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        g_camera.ProcessKeyboard(right, g_deltaTime);
 }
