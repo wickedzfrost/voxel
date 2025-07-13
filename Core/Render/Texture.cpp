@@ -47,7 +47,7 @@ void Texture::TexUnit(Shader& shader, const char* uniform, GLuint unit)
     shader.Use();
     glActiveTexture(GL_TEXTURE0 + unit);
     Bind();
-    shader.setInt(uniform, unit);
+    shader.SetInt(uniform, unit);
 }
 
 void Texture::Bind() const

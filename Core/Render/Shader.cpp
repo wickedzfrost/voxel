@@ -110,7 +110,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     // Shaders are deleted after this point
     GLuint programID{ createProgram({ vertexID, fragmentID }) };
 
-    std::cout << "Shader created\n";
+    std::cout << "Shader linked: \n\t - " << vertexPath << "\n\t - " << fragmentPath << "\n\n";
     m_id = programID;
 }
 
@@ -124,22 +124,27 @@ void Shader::Use()
     glUseProgram(m_id);
 }
 
-void Shader::setBool(std::string_view name, const bool value) const
+void Shader::SetBool(std::string_view name, const bool value) const
 {
     glUniform1i(glGetUniformLocation(m_id, name.data()), static_cast<int>(value));
 }
 
-void Shader::setInt(std::string_view name, const int value) const
+void Shader::SetInt(std::string_view name, const int value) const
 {
     glUniform1i(glGetUniformLocation(m_id, name.data()), value);
 }
 
-void Shader::setFloat(std::string_view name, const float value) const
+void Shader::SetFloat(std::string_view name, const float value) const
 {
     glUniform1f(glGetUniformLocation(m_id, name.data()), value);
 }
 
-void Shader::setMat4(std::string_view name, const glm::mat4& value) const
+void Shader::SetVec3(std::string_view name, const glm::vec3& value) const
+{
+    glUniform3f(glGetUniformLocation(m_id, name.data()), value.x, value.y, value.z);
+}
+
+void Shader::SetMat4(std::string_view name, const glm::mat4& value) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_id, name.data()), 1, GL_FALSE, glm::value_ptr(value));
 }

@@ -19,6 +19,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 void scroll_callback(GLFWwindow* window, [[maybe_unused]] double xOffset, double yOffset);
 void processInput(GLFWwindow* window);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 namespace Configs
 {
@@ -36,67 +37,54 @@ namespace Globals
     bool g_firstMouse{ true };
     float g_mouseLastX{ Configs::SCR_WIDTH };
     float g_mouseLastY{ Configs::SCR_HEIGHT };
+
+    bool g_enableWireframe{ false };
 }
 
-constexpr std::array<GLfloat, 192> vertices
+constexpr std::array<GLfloat, 108> vertices
 {
-    // Position           // Color            // Texture
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,   1.0f, 1.0f,        // 0
-     0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,        // 1
-    -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,   0.0f, 0.0f,        // 2
-    -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f,        // 3
+    // Position         
+    -0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
 
-     0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,   0.0f, 1.0f,        // 4
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,   0.0f, 0.0f,        // 5
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,   1.0f, 0.0f,        // 6
-    -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f,        // 7
+    -0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
 
-    -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,   0.0f, 1.0f,        // 8
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,   0.0f, 0.0f,        // 9
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,   1.0f, 0.0f,        // 10
-    -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,   1.0f, 1.0f,        // 11
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f,        // 12
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,   0.0f, 0.0f,        // 13
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,   1.0f, 0.0f,        // 14
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,   1.0f, 1.0f,        // 15
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
 
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,   0.0f, 1.0f,        // 16
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,   0.0f, 0.0f,        // 17
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,   1.0f, 0.0f,        // 18
-     0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,   1.0f, 1.0f,        // 19
+    -0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f, -0.5f,
 
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,   1.0f, 1.0f,        // 20
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,   1.0f, 0.0f,        // 21
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,   0.0f, 0.0f,        // 22
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,   0.0f, 1.0f,        // 23
-};
-
-constexpr std::array<GLuint, 36> indices
-{
-    // Top face
-    0, 1, 2,
-    2, 3, 0,
-
-    // Front face
-    4, 5, 6,
-    6, 7, 4,
-
-    // Left face
-    8, 9, 10,
-    10, 11, 8,
-
-    // Back face
-    12, 13, 14,
-    14, 15, 12,
-
-    // Right face
-    16, 17, 18,
-    18, 19, 16,
-
-    // Bottom face
-    20, 21, 22,
-    22, 23, 20,
+    -0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
 };
 
 constexpr std::array<glm::vec3, 10> cubePositions
@@ -136,6 +124,7 @@ namespace
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetCursorPosCallback(window, mouse_callback);
         glfwSetScrollCallback(window, scroll_callback);
+        glfwSetKeyCallback(window, key_callback);
     }
 
     bool loadGLAD()
@@ -179,75 +168,88 @@ int main()
     // Viewport setup
     glViewport(0, 0, Configs::SCR_WIDTH, Configs::SCR_HEIGHT);
 
-    Shader shader("Shaders/vert.glsl", "Shaders/frag.glsl");
+    // Creates shader program
+    Shader lightingShader("Shaders/lightingVert.glsl", "Shaders/lightingFrag.glsl");
+    Shader lightCubeShader("Shaders/lightCubeVert.glsl", "Shaders/lightCubeFrag.glsl");
 
-    VAO vao{};
-    vao.Bind();
+    // Initialize cube's VAO and VBO
+    VAO cubeVao{};
+    cubeVao.Bind();
 
-    VBO vbo{ vertices, GL_STATIC_DRAW };
-    EBO ebo{ indices, GL_STATIC_DRAW };
-    vbo.Bind();
-    ebo.Bind();
-
-    Texture texture{ "Assets/container.jpg", GL_RGB, GL_TEXTURE0 };
-    Texture texture2{ "Assets/awesomeface.png", GL_RGBA, GL_TEXTURE1 };
-
-    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 8 * sizeof(GLfloat), 0);
-    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 8 * sizeof(GLfloat), 3 * sizeof(float));
-    vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, 8 * sizeof(GLfloat), 6 * sizeof(float));
+    VBO cubeVbo{ vertices, GL_STATIC_DRAW };
+    cubeVbo.Bind();
+    cubeVao.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 3 * sizeof(GLfloat), 0);
+    
+    // Initialize light source's VAO and VBO
+    VAO lightVAO{};
+    lightVAO.Bind();
+    
+    cubeVbo.Bind();
+    lightVAO.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 3 * sizeof(GLfloat), 0);
 
     // Unbind to prevent accidental modifications
-    vao.Unbind();
-    vbo.Unbind();
-    ebo.Unbind();
-
-    texture.TexUnit(shader, "texture1", 0);
-    texture2.TexUnit(shader, "texture2", 1);
-
-// Turns wireframe mode on or off
-#if 0
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-#endif
+    cubeVao.Unbind();
+    lightVAO.Unbind();
+    cubeVbo.Unbind();
 
     glEnable(GL_DEPTH_TEST);
     
     // Render loop
     while (!glfwWindowShouldClose(window))
     {
-        // Time calculations
+        if (Globals::g_enableWireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        
+        // Per-frame time logic
         float currentTime{ static_cast<float>(glfwGetTime()) };
         Globals::g_deltaTime = currentTime - Globals::g_lastTime;
         Globals::g_lastTime = currentTime;
 
+        // Input
         processInput(window);
 
-        // Clear buffers
+        // Render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        lightingShader.Use();
+        lightingShader.SetVec3("objectColor", glm::vec3{ 1.0f, 0.5f, 0.31f });
+        lightingShader.SetVec3("lightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
+
+        // View/projection matrix transformations
         constexpr float nearPlane{ 0.1f };
         constexpr float farPlane{ 100.0f };
         const glm::mat4 proj{ glm::perspective(glm::radians(Globals::g_camera.m_zoom), Configs::ASPECT_RATIO, nearPlane, farPlane) };
-        shader.setMat4("proj", proj);
-
         const glm::mat4 view{ Globals::g_camera.GetViewMatrix() };
-        shader.setMat4("view", view);
+        lightingShader.SetMat4("proj", proj);
+        lightingShader.SetMat4("view", view);
 
-        shader.Use();
-        vao.Bind();
+        // World transformation
+        glm::mat4 model{ glm::mat4{1.0f} };
+        lightingShader.SetMat4("model", model);
 
-        // Draw calls
-        for (std::size_t i{ 0 }; i < cubePositions.size(); ++i)
-        {
-            glm::mat4 model{ glm::mat4{1.0f} };
-            model = glm::translate(model, cubePositions[static_cast<int>(i)]);
-            float angle{ 20.0f * i };
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(0.5f, 1.0f, 0.0f));
-            shader.setMat4("model", model);
+        // Render the cube
+        cubeVao.Bind();
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        }
+        // Render the light source as well
+        lightCubeShader.Use();
+        lightCubeShader.SetMat4("proj", proj);
+        lightCubeShader.SetMat4("view", view);
 
+        model = glm::mat4{ 1.0f };
+        const glm::vec3 lightPos{ 1.2f, 1.0f, 2.0f };
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f));
+        
+        lightCubeShader.SetMat4("model", model);
+
+        lightVAO.Bind();
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // GLFW: Swap buffer and poll IO events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -298,6 +300,7 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
 
+    // Handles movement
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         g_camera.ProcessKeyboard(forward, g_deltaTime);
 
@@ -309,4 +312,10 @@ void processInput(GLFWwindow* window)
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         g_camera.ProcessKeyboard(right, g_deltaTime);
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_E && action == GLFW_PRESS)
+        Globals::g_enableWireframe = !Globals::g_enableWireframe;
 }

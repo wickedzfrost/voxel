@@ -37,10 +37,11 @@ public:
         Try to pass <std::string_view name> by string literals,
         passing strings without null terminator will result in UB
     */
-    void setBool(std::string_view name, const bool value) const;
-    void setInt(std::string_view name, const int value) const;
-    void setFloat(std::string_view name, const float value) const;
-    void setMat4(std::string_view name, const glm::mat4& value) const;
+    void SetBool(std::string_view name, const bool value) const;
+    void SetInt(std::string_view name, const int value) const;
+    void SetFloat(std::string_view name, const float value) const;
+    void SetVec3(std::string_view name, const glm::vec3& value) const;
+    void SetMat4(std::string_view name, const glm::mat4& value) const;
 };
 
 #endif // !SHADER_H
