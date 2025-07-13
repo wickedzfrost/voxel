@@ -41,64 +41,50 @@ namespace Globals
     bool g_enableWireframe{ false };
 }
 
-constexpr std::array<GLfloat, 108> vertices
+constexpr std::array<GLfloat, 216> vertices
 {
-    // Position         
-    -0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
+    // Position             // Normal
+    -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,
-     0.5f, -0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
 
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
 
-     0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
 
-    -0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f,  0.5f,
-     0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
 
-    -0.5f,  0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-     0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-};
-
-constexpr std::array<glm::vec3, 10> cubePositions
-{
-    glm::vec3(0.0f,  0.0f,  0.0f),
-    glm::vec3(2.0f,  5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f),
-    glm::vec3(-3.8f, -2.0f, -12.3f),
-    glm::vec3(2.4f, -0.4f, -3.5f),
-    glm::vec3(-1.7f,  3.0f, -7.5f),
-    glm::vec3(1.3f, -2.0f, -2.5f),
-    glm::vec3(1.5f,  2.0f, -2.5f),
-    glm::vec3(1.5f,  0.2f, -1.5f),
-    glm::vec3(-1.3f,  1.0f, -1.5f)
+    -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,
 };
 
 // Anon-namespace for initialization functions
@@ -178,14 +164,15 @@ int main()
 
     VBO cubeVbo{ vertices, GL_STATIC_DRAW };
     cubeVbo.Bind();
-    cubeVao.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 3 * sizeof(GLfloat), 0);
+    cubeVao.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);
+    cubeVao.LinkAttrib(cubeVbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);
     
     // Initialize light source's VAO and VBO
     VAO lightVAO{};
     lightVAO.Bind();
     
     cubeVbo.Bind();
-    lightVAO.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 3 * sizeof(GLfloat), 0);
+    lightVAO.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);
 
     // Unbind to prevent accidental modifications
     cubeVao.Unbind();
@@ -214,9 +201,13 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Activate shader and set uniforms
+        const glm::vec3 lightPos{ 1.2f, 0.5f, 2.0f };
+
         lightingShader.Use();
         lightingShader.SetVec3("objectColor", glm::vec3{ 1.0f, 0.5f, 0.31f });
         lightingShader.SetVec3("lightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
+        lightingShader.SetVec3("lightPos", lightPos);
 
         // View/projection matrix transformations
         constexpr float nearPlane{ 0.1f };
@@ -240,7 +231,6 @@ int main()
         lightCubeShader.SetMat4("view", view);
 
         model = glm::mat4{ 1.0f };
-        const glm::vec3 lightPos{ 1.2f, 1.0f, 2.0f };
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.2f));
         
