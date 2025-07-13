@@ -139,9 +139,29 @@ void Shader::SetFloat(std::string_view name, const float value) const
     glUniform1f(glGetUniformLocation(m_id, name.data()), value);
 }
 
+void Shader::SetVec2(std::string_view name, const glm::vec2& value) const
+{
+    glUniform2fv(glGetUniformLocation(m_id, name.data()), 1, glm::value_ptr(value));
+}
+
 void Shader::SetVec3(std::string_view name, const glm::vec3& value) const
 {
-    glUniform3f(glGetUniformLocation(m_id, name.data()), value.x, value.y, value.z);
+    glUniform3fv(glGetUniformLocation(m_id, name.data()), 1, glm::value_ptr(value));
+}
+
+void Shader::SetVec4(std::string_view name, const glm::vec4& value) const
+{
+    glUniform4fv(glGetUniformLocation(m_id, name.data()), 1, glm::value_ptr(value));
+}
+
+void Shader::SetMat2(std::string_view name, const glm::mat2& value) const
+{
+    glUniformMatrix2fv(glGetUniformLocation(m_id, name.data()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::SetMat3(std::string_view name, const glm::mat3& value) const
+{
+    glUniformMatrix3fv(glGetUniformLocation(m_id, name.data()), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::SetMat4(std::string_view name, const glm::mat4& value) const

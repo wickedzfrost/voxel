@@ -40,7 +40,11 @@ public:
     void SetBool(std::string_view name, const bool value) const;
     void SetInt(std::string_view name, const int value) const;
     void SetFloat(std::string_view name, const float value) const;
+    void SetVec2(std::string_view name, const glm::vec2& value) const;
     void SetVec3(std::string_view name, const glm::vec3& value) const;
+    void SetVec4(std::string_view name, const glm::vec4& value) const;
+    void SetMat2(std::string_view name, const glm::mat2& value) const;
+    void SetMat3(std::string_view name, const glm::mat3& value) const;
     void SetMat4(std::string_view name, const glm::mat4& value) const;
 };
 
