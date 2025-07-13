@@ -98,9 +98,10 @@ namespace
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
     // Reads shader file and saves them into a string
+    std::cout << "Linking shader: \n\t - " << vertexPath << "\n\t - " << fragmentPath << "\n\n";
     const std::string vertexSource{ readShaderFile(vertexPath) };
     const std::string fragmentSource{ readShaderFile(fragmentPath) };
-    
+
     const char* vertexCode{ vertexSource.c_str() };
     const char* fragmentCode{ fragmentSource.c_str() };
 
@@ -110,7 +111,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     // Shaders are deleted after this point
     GLuint programID{ createProgram({ vertexID, fragmentID }) };
 
-    std::cout << "Shader linked: \n\t - " << vertexPath << "\n\t - " << fragmentPath << "\n\n";
     m_id = programID;
 }
 
