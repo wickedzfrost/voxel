@@ -1,4 +1,5 @@
 #include <array>
+#include <cmath>
 #include <iostream>
 
 #include <glad/glad.h>
@@ -202,11 +203,13 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Activate shader and set uniforms
-        const glm::vec3 lightPos{ 1.2f, 0.5f, 2.0f };
+        const glm::vec3 objectColor{ 1.0f, 0.5f, 0.31f };
+        const glm::vec3 lightPos{ 2.0f * std::sin(currentTime), 0.4f, 2.0f * std::cos(currentTime) };
+        const glm::vec3 lightColor{ 1.0f, 1.0f, 1.0f };
 
         lightingShader.Use();
-        lightingShader.SetVec3("objectColor", glm::vec3{ 1.0f, 0.5f, 0.31f });
-        lightingShader.SetVec3("lightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
+        lightingShader.SetVec3("objectColor", objectColor);
+        lightingShader.SetVec3("lightColor", lightColor);
         lightingShader.SetVec3("lightPos", lightPos);
 
         // View/projection matrix transformations
@@ -227,6 +230,7 @@ int main()
 
         // Render the light source as well
         lightCubeShader.Use();
+        lightCubeShader.SetVec3("lightColor", lightColor);
         lightCubeShader.SetMat4("proj", proj);
         lightCubeShader.SetMat4("view", view);
 
