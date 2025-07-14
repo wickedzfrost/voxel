@@ -170,15 +170,15 @@ int main()
 
     VBO cubeVbo{ vertices, GL_STATIC_DRAW };
     cubeVbo.Bind();
-    cubeVao.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);
-    cubeVao.LinkAttrib(cubeVbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);
+    cubeVao.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);                    // Position
+    cubeVao.LinkAttrib(cubeVbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), 3 * sizeof(GLfloat));  // Normal
     
     // Initialize light source's VAO and VBO
     VAO lightVAO{};
     lightVAO.Bind();
     
     cubeVbo.Bind();
-    lightVAO.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);
+    lightVAO.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);   // Position
 
     // Unbind to prevent accidental modifications
     cubeVao.Unbind();
@@ -236,6 +236,7 @@ int main()
         lightingShader.SetVec3("objectColor", objectColor);
         lightingShader.SetVec3("lightColor", lightColor);
         lightingShader.SetVec3("lightPos", lightPos);
+        lightingShader.SetVec3("viewPos", Globals::g_camera.m_cameraPosition);
 
         // View/projection matrix transformations
         constexpr float nearPlane{ 0.1f };
@@ -271,8 +272,6 @@ int main()
         // GLFW: Swap buffer and poll IO events
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        std::cout << Globals::g_animationTime << '\n';
     }
 
     glfwTerminate();
