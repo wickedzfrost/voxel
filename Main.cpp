@@ -186,10 +186,11 @@ int main()
     cubeVbo.Unbind();
 
     glEnable(GL_DEPTH_TEST);
-    
+
     // Render loop
     while (!glfwWindowShouldClose(window))
     {
+        // Enable or disable wireframe mode
         if (Globals::g_enableWireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
@@ -218,25 +219,36 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Configure position settings
+        // Configure light properties
         glm::vec3 lightPos{ Globals::g_lastLightPos };
         const glm::vec3 objectColor{ 1.0f, 0.5f, 0.31f };
-        const glm::vec3 lightColor{ 1.0f, 1.0f, 1.0f };
+        glm::vec3 lightColor{ 1.0f, 1.0f, 1.0f };
 
         if (Globals::g_enableLightMove)
         {
             constexpr float radius{ 2.5f };
             constexpr float height{ 0.4f };
-            lightPos = glm::vec3{ radius * std::sin(Globals::g_animationTime), height, radius * std::cos(Globals::g_animationTime)};
+            lightPos = glm::vec3{ radius * std::sin(Globals::g_animationTime), height, radius * std::cos(Globals::g_animationTime) };
             Globals::g_lastLightPos = lightPos;
         }
 
         // Activate shader and set uniforms
         lightingShader.Use();
-        lightingShader.SetVec3("objectColor", objectColor);
-        lightingShader.SetVec3("lightColor", lightColor);
-        lightingShader.SetVec3("lightPos", lightPos);
+        lightingShader.SetVec3("light.position", lightPos);
         lightingShader.SetVec3("viewPos", Globals::g_camera.m_cameraPosition);
+
+        // Set light intensity
+        const glm::vec3 diffuseColor{ lightColor * glm::vec3{1.0f} };
+        const glm::vec3 ambientColor{ diffuseColor * glm::vec3{1.0f} };
+        lightingShader.SetVec3("light.ambient", ambientColor);
+        lightingShader.SetVec3("light.diffuse", diffuseColor);
+        lightingShader.SetVec3("light.specular", glm::vec3{ 1.0f, 1.0f, 1.0f });
+
+        // Set material quality
+        lightingShader.SetVec3("material.ambient", glm::vec3(0.05375f, 0.05f, 0.06625f));
+        lightingShader.SetVec3("material.diffuse", glm::vec3(0.18275f, 0.17f, 0.22525f));
+        lightingShader.SetVec3("material.specular", glm::vec3(0.332741f, 0.328634f, 0.346435f));
+        lightingShader.SetFloat("material.shininess", 0.3f * 128.0f);
 
         // View/projection matrix transformations
         constexpr float nearPlane{ 0.1f };
@@ -248,6 +260,7 @@ int main()
 
         // World transformation
         glm::mat4 model{ glm::mat4{1.0f} };
+        model = glm::translate(model, glm::vec3{ 0.0f, -0.75f, 0.0f });
         lightingShader.SetMat4("model", model);
 
         // Render the cube
