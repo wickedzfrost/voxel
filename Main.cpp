@@ -1,6 +1,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <numbers>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -34,12 +35,16 @@ namespace Globals
     Camera g_camera(glm::vec3(0.0f, 0.0f, 3.0f));
     float g_deltaTime{ 0.0f };
     float g_lastTime{ 0.0f };
+    float g_animationTime{ 0.0f };
+    bool g_animationPaused{ false };
+    glm::vec3 g_lastLightPos{ 1.0f, 0.4f, 1.5f };
 
     bool g_firstMouse{ true };
     float g_mouseLastX{ Configs::SCR_WIDTH };
     float g_mouseLastY{ Configs::SCR_HEIGHT };
 
     bool g_enableWireframe{ false };
+    bool g_enableLightMove{ true };
 }
 
 constexpr std::array<GLfloat, 216> vertices
@@ -195,6 +200,17 @@ int main()
         Globals::g_deltaTime = currentTime - Globals::g_lastTime;
         Globals::g_lastTime = currentTime;
 
+        // Tracks animation time and resets it once the time passes 2 * PI
+        if (!Globals::g_animationPaused)
+        {
+            Globals::g_animationTime += Globals::g_deltaTime;
+
+            if (Globals::g_animationTime > 2.0f * std::numbers::pi_v<float>)
+            {
+                Globals::g_animationTime -= 2.0f * std::numbers::pi_v<float>;
+            }
+        }
+
         // Input
         processInput(window);
 
@@ -202,11 +218,20 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Activate shader and set uniforms
+        // Configure position settings
+        glm::vec3 lightPos{ Globals::g_lastLightPos };
         const glm::vec3 objectColor{ 1.0f, 0.5f, 0.31f };
-        const glm::vec3 lightPos{ 2.0f * std::sin(currentTime), 0.4f, 2.0f * std::cos(currentTime) };
         const glm::vec3 lightColor{ 1.0f, 1.0f, 1.0f };
 
+        if (Globals::g_enableLightMove)
+        {
+            constexpr float radius{ 2.5f };
+            constexpr float height{ 0.4f };
+            lightPos = glm::vec3{ radius * std::sin(Globals::g_animationTime), height, radius * std::cos(Globals::g_animationTime)};
+            Globals::g_lastLightPos = lightPos;
+        }
+
+        // Activate shader and set uniforms
         lightingShader.Use();
         lightingShader.SetVec3("objectColor", objectColor);
         lightingShader.SetVec3("lightColor", lightColor);
@@ -246,6 +271,8 @@ int main()
         // GLFW: Swap buffer and poll IO events
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        std::cout << Globals::g_animationTime << '\n';
     }
 
     glfwTerminate();
@@ -312,4 +339,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
     if (key == GLFW_KEY_E && action == GLFW_PRESS)
         Globals::g_enableWireframe = !Globals::g_enableWireframe;
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
+        Globals::g_enableLightMove = !Globals::g_enableLightMove;
+        Globals::g_animationPaused = !Globals::g_animationPaused;
+    }
 }
