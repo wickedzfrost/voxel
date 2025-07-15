@@ -47,50 +47,50 @@ namespace Globals
     bool g_enableLightMove{ true };
 }
 
-constexpr std::array<GLfloat, 216> vertices
+constexpr std::array<GLfloat, 288> vertices
 {
-    // Position             // Normal
-    -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
-     0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+    // Position           // Normal            // Tex Coord
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
 
-    -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
-     0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
-    -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
-    -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
 
-    -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-     0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-    -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
 
-    -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 };
 
 // Anon-namespace for initialization functions
@@ -170,15 +170,24 @@ int main()
 
     VBO cubeVbo{ vertices, GL_STATIC_DRAW };
     cubeVbo.Bind();
-    cubeVao.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);                    // Position
-    cubeVao.LinkAttrib(cubeVbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), 3 * sizeof(GLfloat));  // Normal
+    cubeVao.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 8 * sizeof(GLfloat), 0);                    // Position
+    cubeVao.LinkAttrib(cubeVbo, 1, 3, GL_FLOAT, 8 * sizeof(GLfloat), 3 * sizeof(GLfloat));  // Normal
+    cubeVao.LinkAttrib(cubeVbo, 2, 2, GL_FLOAT, 8 * sizeof(GLfloat), 6 * sizeof(GLfloat));  // Texture Coord
     
     // Initialize light source's VAO and VBO
     VAO lightVAO{};
     lightVAO.Bind();
     
     cubeVbo.Bind();
-    lightVAO.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), 0);   // Position
+    lightVAO.LinkAttrib(cubeVbo, 0, 3, GL_FLOAT, 8 * sizeof(GLfloat), 0);   // Position
+
+    // Textures
+    Texture container{ "Assets/container2.png", GL_RGBA, 0 };
+    Texture containerSpec{ "Assets/container2_Specular.png", GL_RGBA, 1 };
+
+    lightingShader.Use();
+    lightingShader.SetInt("material.diffuse", 0);
+    lightingShader.SetInt("material.specular", 1);
 
     // Unbind to prevent accidental modifications
     cubeVao.Unbind();
@@ -238,17 +247,15 @@ int main()
         lightingShader.SetVec3("viewPos", Globals::g_camera.m_cameraPosition);
 
         // Set light intensity
-        const glm::vec3 diffuseColor{ lightColor * glm::vec3{1.0f} };
-        const glm::vec3 ambientColor{ diffuseColor * glm::vec3{1.0f} };
+        const glm::vec3 diffuseColor{ lightColor * glm::vec3{ 0.5f } };
+        const glm::vec3 ambientColor{ diffuseColor * glm::vec3{ 0.2f } };
         lightingShader.SetVec3("light.ambient", ambientColor);
         lightingShader.SetVec3("light.diffuse", diffuseColor);
-        lightingShader.SetVec3("light.specular", glm::vec3{ 1.0f, 1.0f, 1.0f });
+        lightingShader.SetVec3("light.specular", glm::vec3{ 1.0f });
 
         // Set material quality
-        lightingShader.SetVec3("material.ambient", glm::vec3(0.05375f, 0.05f, 0.06625f));
-        lightingShader.SetVec3("material.diffuse", glm::vec3(0.18275f, 0.17f, 0.22525f));
-        lightingShader.SetVec3("material.specular", glm::vec3(0.332741f, 0.328634f, 0.346435f));
-        lightingShader.SetFloat("material.shininess", 0.3f * 128.0f);
+        lightingShader.SetVec3("material.specular", glm::vec3{ 0.5f });
+        lightingShader.SetFloat("material.shininess", 64.0f);
 
         // View/projection matrix transformations
         constexpr float nearPlane{ 0.1f };
@@ -263,6 +270,10 @@ int main()
         model = glm::translate(model, glm::vec3{ 0.0f, -0.75f, 0.0f });
         lightingShader.SetMat4("model", model);
 
+        // Bind texture
+        container.Bind();
+        containerSpec.Bind();
+
         // Render the cube
         cubeVao.Bind();
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -275,7 +286,7 @@ int main()
 
         model = glm::mat4{ 1.0f };
         model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
+        model = glm::scale(model, glm::vec3{ 0.2f });
         
         lightCubeShader.SetMat4("model", model);
 

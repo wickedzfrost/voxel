@@ -52,5 +52,6 @@ void Texture::TexUnit(Shader& shader, const char* uniform, GLuint unit)
 
 void Texture::Bind() const
 {
+    glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_2D, m_id);
 }
