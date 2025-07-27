@@ -15,6 +15,7 @@
 #include "Core/Render/Shader.h"
 #include "Core/Render/Texture.h"
 #include "Core/Render/Camera.h"
+#include "Core/System/Gravity.h"
 
 // Callback function forward declarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -38,6 +39,8 @@ namespace Globals
     float g_animationTime{ 0.0f };
     bool g_animationPaused{ false };
     glm::vec3 g_lastLightPos{ 1.0f, 0.4f, 1.5f };
+
+    Gravity g_gravity{};
 
     bool g_firstMouse{ true };
     float g_mouseLastX{ Configs::SCR_WIDTH };
@@ -210,6 +213,10 @@ int main()
         Globals::g_deltaTime = currentTime - Globals::g_lastTime;
         Globals::g_lastTime = currentTime;
 
+        // Gravity
+        Globals::g_gravity.update(Globals::g_deltaTime);
+        Globals::g_gravity.log();
+
         // Tracks animation time and resets it once the time passes 2 * PI
         if (!Globals::g_animationPaused)
         {
@@ -366,5 +373,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     {
         Globals::g_enableLightMove = !Globals::g_enableLightMove;
         Globals::g_animationPaused = !Globals::g_animationPaused;
+    }
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
+        Globals::g_gravity.toggle();
     }
 }
