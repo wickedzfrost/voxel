@@ -362,7 +362,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
     if (key == GLFW_KEY_E && action == GLFW_PRESS)
         Globals::g_enableWireframe = !Globals::g_enableWireframe;
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    if (key == GLFW_KEY_G && action == GLFW_PRESS)
     {
         Globals::g_enableLightMove = !Globals::g_enableLightMove;
         Globals::g_animationPaused = !Globals::g_animationPaused;
